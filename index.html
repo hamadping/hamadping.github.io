@@ -2,17 +2,64 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <title>Hamadping</title>
-  <script>
-    setInterval(() => {
-      fetch("https://speed.cloudflare.com/__down?bytes=1000000")
-        .then(() => console.log("Ping sent"))
-        .catch(() => {});
-    }, 5000);
-  </script>
+  <title>تسريع البنق</title>
+  <style>
+    body { text-align: center; font-family: sans-serif; background-color: #f7f7f7; margin-top: 50px; }
+    h1 { color: #1a73e8; }
+    .status { font-size: 20px; margin-top: 20px; color: #444; }
+  </style>
 </head>
 <body>
-  <h1>Hamadping - تقليل البنق أثناء اللعب</h1>
-  <p>اترك هذه الصفحة مفتوحة أثناء اللعب لتحسين استقرار الاتصال.</p>
+  <h1>تسريع البنق - اترك الصفحة مفتوحة</h1>
+  <div class="status">عدد الإشارات: <span id="count">0</span></div>
+
+  <script>
+    // عداد الإشارات
+    let count = 0;
+    const urls = [
+      "https://1.1.1.1/cdn-cgi/trace",
+      "https://8.8.8.8/generate_204",
+      "https://speed.cloudflare.com/__down?bytes=10000"
+    ];
+
+    function loopPings() {
+      urls.forEach(url => {
+        fetch(url, { mode: "no-cors" })
+          .then(() => {
+            count++;
+            document.getElementById("count").textContent = count;
+          })
+          .catch(() => {});
+      });
+    }
+
+    setInterval(loopPings, 2000); // كل ثانيتين
+
+    // منع إغلاق الشاشة
+    let wakeLock = null;
+
+    async function requestWakeLock() {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        console.log('تم تفعيل منع إغلاق الشاشة');
+
+        wakeLock.addEventListener('release', () => {
+          console.log('تم إيقاف منع إغلاق الشاشة');
+        });
+      } catch (err) {
+        console.error('فشل في تفعيل Wake Lock:', err);
+      }
+    }
+
+    if ('wakeLock' in navigator) {
+      requestWakeLock();
+      // إعادة الطلب إذا فقد الاتصال
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          requestWakeLock();
+        }
+      });
+    }
+  </script>
 </body>
 </html>
