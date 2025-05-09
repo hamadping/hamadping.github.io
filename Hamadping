@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hamadping - تسريع البنق</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      color: #1a73e8;
+    }
+    .counter {
+      font-size: 24px;
+      margin-top: 20px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hamadping - تقليل البنق أثناء اللعب</h1>
+  <p>اترك هذه الصفحة مفتوحة أثناء اللعب لتحسين الاتصال.</p>
+  <div class="counter">عدد الإشارات المرسلة: <span id="pingCount">0</span></div>
+
+  <script>
+    let count = 0;
+    setInterval(() => {
+      fetch("https://1.1.1.1/cdn-cgi/trace")
+        .then(() => {
+          count++;
+          document.getElementById("pingCount").textContent = count;
+          console.log("Ping sent");
+        })
+        .catch(() => {});
+    }, 3000); // كل 3 ثواني
+  </script>
+</body>
+</html>
